@@ -89,6 +89,14 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     * Find the latest firmware in the list (example: linux-firmware_1.187_all.deb) and download it
     * Install the downloaded firmware (eg: sudo apt install ./linux-firmware_1.187_all.deb)
     * Reboot the system
+* **If the Bluetooth adapter stops working out of the blue:**
+    * Check if the bluetooth adapter is listed when using the `list` command inside `bluetoothctl`
+    * If no adapter is found, Try the following:
+        * Turn OFF the Bluetooth from the BIOS->Wireless (both sub menus). Save and restart the system
+        * As expected, there wont be a bluetooth adapter shown
+        * Then restart system, and Turn ON Bluetoooth from the BIOS->Wireless (both sub menus). Save and restart the system
+        * The Bluetooth device should now be shown.
+        * `bluetoothctl` should also list the adpater now.
 
 ## Fix Suspend issue 
 
