@@ -35,11 +35,6 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
 * Boot into USB using the Boot options at restart, using the key F12
 * Complete installation instructions. I also installed updates and 3rd party libs during the installation (requires LAN cable or USB tether from a phone).
 * I followed the installation instructions from [here](https://itsfoss.com/install-ubuntu-1404-dual-boot-mode-windows-8-81-uefi/)
-* After installation, connect a LAN cable or USB tether from a phone and upgrade all the packages using:
-    ```
-    sudo apt update
-    sudo apt upgrade
-    ```
 * If there are issues during installations checkout some troubleshooting steps mentioned in the *Install Ubuntu 18.04* section on the [webpage](https://medium.com/@tylergwlum/my-journey-installing-ubuntu-18-04-on-the-dell-xps-15-7590-2019-756f738a6447)
 
 ## Install Terminator
@@ -48,14 +43,52 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     ```
     sudo add-apt-repository ppa:gnome-terminator
     sudo apt update
-    sudo apt install -y terminator curl  
+    sudo apt install -y terminator curl
     ```
 * Change the color of the prompt in bashrc
 * Activate infinite scrolling and disable scroll on output in  terminator preferences
 
+
+## Upgrade all packages
+
+* After installation, connect a LAN cable or USB tether from a phone and upgrade all the packages using:
+    ```
+    sudo apt update
+    sudo apt upgrade
+    reboot
+    ```
+
 ## Setup Killer Wifi and Bluetooth Drivers:
 
-* Execute the following commands.
+### Tested steps that work
+
+* Install the Backported Iwlwifi Driver using APT
+    ```
+    sudo add-apt-repository ppa:canonical-hwe-team/backport-iwlwifi
+    sudo apt-get update
+    sudo apt-get install -y backport-iwlwifi-dkms
+    reboot
+    ```
+* Upgrade the ubuntu version firmware as described [here](https://ubuntuforums.org/showthread.php?t=2423019)
+    * First go to this [link](http://archive.ubuntu.com/ubuntu/pool/main/l/linux-firmware/?)
+    * Find the latest firmware in the list (example: linux-firmware_1.187_all.deb) and download it
+    * Install the downloaded firmware (eg: sudo apt install ./linux-firmware_1.187_all.deb)
+    * Reboot the system
+* The two steps previous steps should ideally get WIFI and Bluetooth up and running. If that is not the case try the alternative steps described in the next section.
+* **If the Bluetooth adapter stops working out of the blue:**
+    * Check if the bluetooth adapter is listed when using the `list` command inside `bluetoothctl`
+    * If no adapter is found, Try the following:
+        * Turn OFF the Bluetooth from the BIOS->Wireless (both sub menus). Save and restart the system
+        * As expected, there wont be a bluetooth adapter shown
+        * Then restart system, and Turn ON Bluetoooth from the BIOS->Wireless (both sub menus). Save and restart the system
+        * The Bluetooth device should now be shown.
+        * `bluetoothctl` should also list the adpater now.
+
+### Alternative methods if the previous did not work
+
+* These instructions are taken from [Killers website](https://support.killernetworking.com/knowledge-base/killer-ax1650-in-debian-ubuntu-16-04/)
+
+* Execute the following commands
     ```
     sudo apt-get install -y git
     sudo apt-get install -y build-essential
@@ -77,26 +110,7 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     sudo make uninstall
     reboot
     ```
-* Then install via apt the Backported Iwlwifi Driver using below commands. That should get atleast the wifi running.
-    ```
-    sudo add-apt-repository ppa:canonical-hwe-team/backport-iwlwifi
-    sudo apt-get update
-    sudo apt-get install backport-iwlwifi-dkms
-    reboot
-    ```
-* If the bluetooth still doesn't work, you will need to upgrade the ubuntu version firmware as described in [here](https://ubuntuforums.org/showthread.php?t=2423019)
-    * First go to this [link](http://archive.ubuntu.com/ubuntu/pool/main/l/linux-firmware/?)
-    * Find the latest firmware in the list (example: linux-firmware_1.187_all.deb) and download it
-    * Install the downloaded firmware (eg: sudo apt install ./linux-firmware_1.187_all.deb)
-    * Reboot the system
-* **If the Bluetooth adapter stops working out of the blue:**
-    * Check if the bluetooth adapter is listed when using the `list` command inside `bluetoothctl`
-    * If no adapter is found, Try the following:
-        * Turn OFF the Bluetooth from the BIOS->Wireless (both sub menus). Save and restart the system
-        * As expected, there wont be a bluetooth adapter shown
-        * Then restart system, and Turn ON Bluetoooth from the BIOS->Wireless (both sub menus). Save and restart the system
-        * The Bluetooth device should now be shown.
-        * `bluetoothctl` should also list the adpater now.
+    * Then follow the steps described previously in the section **Tested steps that work**
 
 ## Fix Suspend issue 
 
@@ -106,13 +120,48 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="[^"]*/& mem_sleep_default=deep/' /etc/default/grub
     sudo update-grub
     ```
+
+## Install NVidia Drivers
+* Use below commands:
+    ```
+    sudo add-apt-repository ppa:graphics-drivers/ppa
+    sudo apt update
+    sudo apt install -y nvidia-430 nvidia-settings
+    ```
+
+## Install Cuda-9.2 and related Nvidia drivers (setup decides the driver version automatically) 
+
+* Inspired from [here](https://docs.nvidia.com/cuda/archive/9.2/cuda-installation-guide-linux/index.html). Below is the set of actually needed commands:
+    ```
+    sudo apt-get install -y linux-headers-$(uname -r)
+    ** Download the Cuda toolkit (Base Installer) from [here](https://developer.nvidia.com/cuda-92-download-archive) **
+    sudo dpkg -i cuda-repo-<distro>_<version>_<architecture>.deb
+    sudo apt-key add /var/cuda-repo-<version>/7fa2af80.pub
+    sudo apt-get update
+    sudo apt-get install -y cuda-9-2
+    **Add this line  to the bashrc: export PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}**
+    reboot
+    ```
+* The above step at the time of writing installed Driver Version: 440.64.00 with CUDA Version: 10.2. That is alright since it will use a runtime version of 9.2. This is the output of nvidia-smi command:
+    ```
+        +-----------------------------------------------------------------------------+
+        | NVIDIA-SMI 440.64.00    Driver Version: 440.64.00    CUDA Version: 10.2     |
+        |-------------------------------+----------------------+----------------------+
+        | GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+        | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+        |===============================+======================+======================|
+        |   0  GeForce GTX 1650    Off  | 00000000:01:00.0 Off |                  N/A |
+        | N/A   50C    P8     1W /  N/A |    390MiB /  3914MiB |      6%      Default |
+        +-------------------------------+----------------------+----------------------+
+    ```
+
 ## Python3 (and 3.6) setup
 
 * Execute the below commands:
     ```
     sudo add-apt-repository ppa:deadsnakes/ppa
     sudo apt update
-    sudo apt install python3.6
+    sudo apt install -y python3.6
     python3.6 --version
     # sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.5 1
     # sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 2
@@ -142,7 +191,7 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     ```
     pip install -I jupyter
     ```
-* Add this python kernel (from the virtual env) to Jupyter
+* **Optional:** Add this python kernel (from the virtual env) to Jupyter
     ```
     python -m ipykernel install --user --name=SOME_GOOD_KERNEL_NAME
     ```
@@ -151,32 +200,6 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     deactivate
     ```
 
-
-## Install Cuda-9.2 and related Nvidia drivers (setup decides the driver version automatically) 
-
-* Inspired from [here](https://docs.nvidia.com/cuda/archive/9.2/cuda-installation-guide-linux/index.html). Below is the set of actually needed commands:
-    ```
-    sudo apt-get install linux-headers-$(uname -r)
-    ** Download the Cuda toolkit (Base Installer) from [here](https://developer.nvidia.com/cuda-92-download-archive) **
-    sudo dpkg -i cuda-repo-<distro>_<version>_<architecture>.deb
-    sudo apt-key add /var/cuda-repo-<version>/7fa2af80.pub
-    sudo apt-get update
-    sudo apt-get install cuda-9-2
-    ** Add this line  to the bashrc: export PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}} **
-    reboot
-    ```
-* The above step at the time of writing installed Driver Version: 440.64.00 with CUDA Version: 10.2. That is alright since it will use a runtime version of 9.2. This is the output of nvidia-smi command:
-    ```
-        +-----------------------------------------------------------------------------+
-        | NVIDIA-SMI 440.64.00    Driver Version: 440.64.00    CUDA Version: 10.2     |
-        |-------------------------------+----------------------+----------------------+
-        | GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
-        | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
-        |===============================+======================+======================|
-        |   0  GeForce GTX 1650    Off  | 00000000:01:00.0 Off |                  N/A |
-        | N/A   50C    P8     1W /  N/A |    390MiB /  3914MiB |      6%      Default |
-        +-------------------------------+----------------------+----------------------+
-    ```
 
 ## Install TensorFlow 1.12
 
@@ -293,9 +316,9 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
     sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/
     sudo sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
-    sudo apt-get install apt-transport-https
+    sudo apt-get install -y apt-transport-https
     sudo apt-get update
-    sudo apt-get install code
+    sudo apt-get install -y code
 
     cd ~
     ```
