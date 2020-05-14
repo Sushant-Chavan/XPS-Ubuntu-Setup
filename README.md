@@ -37,6 +37,12 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
 * I followed the installation instructions from [here](https://itsfoss.com/install-ubuntu-1404-dual-boot-mode-windows-8-81-uefi/)
 * If there are issues during installations checkout some troubleshooting steps mentioned in the *Install Ubuntu 18.04* section on the [webpage](https://medium.com/@tylergwlum/my-journey-installing-ubuntu-18-04-on-the-dell-xps-15-7590-2019-756f738a6447)
 
+## Some basic Ubuntu personalization settings
+
+* Set the proper regional format from `System Settings -> Language Support -> Regional Format`. Choose the desired format and click on `Apply System-Wide`.
+* Set the Mouse scrolling to `Natural Scrolling` in `System Settings -> Mouse and Touchpad`
+* Set the desired power options in `System Settings -> Power`
+
 ## Install Terminator
 
 * Execute the below commands:
@@ -121,61 +127,12 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     sudo update-grub
     ```
 
-## Install NVidia Drivers
+## Install Nvidia Drivers
 * Use below commands:
     ```
     sudo add-apt-repository ppa:graphics-drivers/ppa
     sudo apt update
     sudo apt install -y nvidia-430 nvidia-settings
-    ```
-
-## Install Cuda-9.0 and Cuda-9.2 and related Nvidia drivers (setup decides the driver version automatically) 
-
-* Inspired from [here](https://docs.nvidia.com/cuda/archive/9.0/cuda-installation-guide-linux/index.html). Below is the set of actually needed commands:
-    ```
-    sudo apt-get install -y linux-headers-$(uname -r)
-    ** Download the Cuda toolkit (Base Installer) from [here](https://developer.nvidia.com/cuda-90-download-archive) **
-    sudo dpkg -i cuda-repo-<distro>_<version>_<architecture>.deb
-    sudo apt-key add /var/cuda-repo-<version>/7fa2af80.pub
-    sudo apt-get update
-    sudo apt-get install -y cuda-9-0
-    reboot
-    ```
-* It is highly likely that this will result in a **black screen on reboot**, since the cuda drivers downgade the NVidia driver version. To fix this, hard reboot the PC and boot in recovery mode. Then choose the `root` option and activate intel GPU instead of nvidia using the command `prime-select intel`, Finally reboot the PC and that should boot Kinuc properly. Next reinstall the nvidia-430 drivers as using 
-    ```
-    sudo apt purge nvidia*
-    sudo apt update
-    sudo apt install -y nvidia-430 nvidia-settings
-    reboot
-    ```
-* Repeat the previous two steps for Cuda-9.2
-* Add the below lines to bashrc:
-    ```
-    export PATH=/usr/local/cuda/bin${PATH:+:${PATH}}
-    export LD_LIBRARY_PATH=/usr/local/cuda/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/extras/CUPTI/lib64
-    ```
-* In a new terminal, verify that Cuda is installed and is being used properly
-    ```
-    cd /tmp/
-    cuda-install-samples-9.0.sh .
-    cd NVIDIA_CUDA-9.0_Samples/
-    make
-    cd bin/x86_64/linux/release/
-    ./deviceQuery
-    ```
-* Install cuDNN for Cuda 9.0 using the Nvidia's [instructions manual](https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html)
-* The above step at the time of writing installed Driver Version: 430.64 with CUDA Version: 10.1. That is alright since it will use a runtime version of 9.2. This is the output of nvidia-smi command:
-    ```
-	+-----------------------------------------------------------------------------+
-	| NVIDIA-SMI 430.64       Driver Version: 430.64       CUDA Version: 10.1     |
-	|-------------------------------+----------------------+----------------------+
-	| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
-	| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
-	|===============================+======================+======================|
-	|   0  GeForce GTX 1650    Off  | 00000000:01:00.0 Off |                  N/A |
-	| N/A   47C    P8     1W /  N/A |    340MiB /  3914MiB |      4%      Default |
-	+-------------------------------+----------------------+----------------------+
     ```
 
 ## Python3 (and 3.6) setup
@@ -232,12 +189,12 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     sudo apt-get remove docker docker-engine docker.io containerd runc
     # Set up the repository
     sudo apt-get update
-    sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+    sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     # Install Docker
     sudo apt-get update
-    sudo apt-get install docker-ce docker-ce-cli containerd.io
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io
     # Add current user to the docker group (required to avoid running docker using sudo)
     sudo groupadd docker
     sudo usermod -aG docker $USER
@@ -274,7 +231,8 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
         FROM tensorflow/tensorflow:1.14.0-gpu-py3-jupyter
 
         WORKDIR /tf/mounted_dir
-        RUN pip install --upgrade pandas networkx
+        RUN pip install --upgrade pip && \
+            pip install --upgrade jupyter numpy matplotlib sympy scipy pandas seaborn scikit-learn networkx
         ```
     * Build the customized docker image which is based on the pulled docker image using 
         ```
@@ -288,42 +246,27 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
         ```
 * Launch the jupyter-notebook and start working:
     ```
-    # docker run --rm -v ABS_DIR_PATH_ON_HOST_MACHINE:/tf/mounted_dir --gpus all -it -p 8888:8888 SOME_LOCAL_IMAGE_NAME
-    docker run --rm -v /home/suvich15/Desktop:/tf/mounted_dir --gpus all -it -p 8888:8888 my-customized-tensorflow
+    # docker run -u $(id -u):$(id -g) --rm -v ABS_DIR_PATH_ON_HOST_MACHINE:/tf/mounted_dir --gpus all -it -p 8888:8888 SOME_LOCAL_IMAGE_NAME
+    docker run -u $(id -u):$(id -g) --rm -v /home/suvich15:/tf/mounted_dir --gpus all -it -p 8888:8888 tensorflow-1.14
     ```
+    * **Note:** The above command starts the container as the current user and hence can only save newly created files (such as notebooks) inside the directories on the host system which have been created by the current user. For example, you may get errors when creating a notebook in the `/home/suvich15/Desktop` directory.
 
-## Install TensorFlow 1.8
-
-* Install Cuda-9.2 if not already installed.
-* Activate python 3.6 virtual env
+* Add an alias for convinience to the `.bashrc` to run the tensorflow docker image:
     ```
-    cd ~
-    source ./SOME_UNIQUE_V_ENV_NAME/bin/activate
+    alias tensorflow1.14='docker run -u $(id -u):$(id -g) --rm -v /home/suvich15:/tf/mounted_dir --gpus all -it -p 8888:8888 tensorflow-1.14'
     ```
-* Install TF
-    ```
-    pip install --upgrade tensorflow-gpu==1.8.0
-    ```
-* Verify if TF is using GPU with the command:
-    ```
-    python -c "import tensorflow as tf;print('\nDefault GPU Device: {}'.format(tf.test.gpu_device_name()));print('\nGPU Available:', tf.test.is_gpu_available());print('\nBuilt with Cuda: ', tf.test.is_built_with_cuda())"
-    ```
-* Additional Guides can be referred here:
-    * [Multi-Cuda Guide](https://medium.com/@peterjussi/multicuda-multiple-versions-of-cuda-on-one-machine-4b6ccda6faae) for installing multiple versions of TensorFlow
-    * Check the required Cuda and CuDNN versions for a specific Tensorflow version from [here](https://www.tensorflow.org/install/source#linux)
-
 
 ## Install PyTorch version 1.5:
 
-* Install Cuda-9.2 if not already installed.
+* PyTorch comes pre-packaged with the desired Cuda and cuDNN. Therefore there is no need to install these packages separately.
 * Activate python 3.6 virtual env
     ```
     cd ~
     source ./SOME_UNIQUE_V_ENV_NAME/bin/activate
     ```
-* Install PyTorch using the command:
+* Install `PyTorch-1.5` with `Cuda-10.1` using pip with command:
     ```
-    pip install torch==1.5.0+cu92 torchvision==0.6.0+cu92 -f https://download.pytorch.org/whl/torch_stable.html
+    pip install torch==1.5.0+cu101 torchvision==0.6.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html
     ```
 * Verify installation using the below command. The output should be a tensor
     ```
