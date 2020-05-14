@@ -129,7 +129,7 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     sudo apt install -y nvidia-430 nvidia-settings
     ```
 
-## Install Cuda-9.2 and related Nvidia drivers (setup decides the driver version automatically) 
+## Install Cuda-9.0 and Cuda-9.2 and related Nvidia drivers (setup decides the driver version automatically) 
 
 * Inspired from [here](https://docs.nvidia.com/cuda/archive/9.2/cuda-installation-guide-linux/index.html). Below is the set of actually needed commands:
     ```
@@ -139,20 +139,34 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     sudo apt-key add /var/cuda-repo-<version>/7fa2af80.pub
     sudo apt-get update
     sudo apt-get install -y cuda-9-2
-    **Add this line  to the bashrc: export PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}**
     reboot
     ```
-* The above step at the time of writing installed Driver Version: 440.64.00 with CUDA Version: 10.2. That is alright since it will use a runtime version of 9.2. This is the output of nvidia-smi command:
+* It is highly likely that this will result in a **black screen on reboot**, since the cuda drivers downgade the NVidia driver version. To fix this, hard reboot the PC and boot in recovery mode. Then choose the `root` option and activate intel GPU instead of nvidia using the command `prime-select intel`, Finally reboot the PC and that should boot Kinuc properly. Next reinstall the nvidia-430 drivers as using 
     ```
-        +-----------------------------------------------------------------------------+
-        | NVIDIA-SMI 440.64.00    Driver Version: 440.64.00    CUDA Version: 10.2     |
-        |-------------------------------+----------------------+----------------------+
-        | GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
-        | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
-        |===============================+======================+======================|
-        |   0  GeForce GTX 1650    Off  | 00000000:01:00.0 Off |                  N/A |
-        | N/A   50C    P8     1W /  N/A |    390MiB /  3914MiB |      6%      Default |
-        +-------------------------------+----------------------+----------------------+
+    sudo apt purge nvidia*
+    sudo apt update
+    sudo apt install -y nvidia-430 nvidia-settings
+    reboot
+    ```
+* Repeat the previous two steps for Cuda-9.0
+* Add the below lines to bashrc:
+    ```
+    export PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}
+    export LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/extras/CUPTI/lib64
+    ```
+* Install cuDNN for Cuda 9.0 using the Nvidia's [instructions manual](https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html)
+* The above step at the time of writing installed Driver Version: 430.64 with CUDA Version: 10.1. That is alright since it will use a runtime version of 9.2. This is the output of nvidia-smi command:
+    ```
+	+-----------------------------------------------------------------------------+
+	| NVIDIA-SMI 430.64       Driver Version: 430.64       CUDA Version: 10.1     |
+	|-------------------------------+----------------------+----------------------+
+	| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+	| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+	|===============================+======================+======================|
+	|   0  GeForce GTX 1650    Off  | 00000000:01:00.0 Off |                  N/A |
+	| N/A   47C    P8     1W /  N/A |    340MiB /  3914MiB |      4%      Default |
+	+-------------------------------+----------------------+----------------------+
     ```
 
 ## Python3 (and 3.6) setup
@@ -167,7 +181,6 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     # sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 2
     # ** Choose 0 when this command asks for input (i.e. python3.6 --auto)** sudo update-alternatives --config python3
     python3 --version
-    sudo apt update
     sudo apt install -y python3-pip
     pip3 --version
     sudo pip3 install --upgrade pip
@@ -189,7 +202,7 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     ```
 * Install required packages like jupyter etc using the `-I` (i.e. ignore already installed packages in the root) flag of pip. For example:
     ```
-    pip install -I jupyter
+    pip install -I jupyter numpy matplotlib sympy scipy pandas seaborn scikit-learn networkx
     ```
 * **Optional:** Add this python kernel (from the virtual env) to Jupyter
     ```
@@ -201,7 +214,7 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     ```
 
 
-## Install TensorFlow 1.12
+## Install TensorFlow 1.8
 
 * Install Cuda-9.2 if not already installed.
 * Activate python 3.6 virtual env
@@ -211,7 +224,7 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     ```
 * Install TF
     ```
-    pip install --upgrade tensorflow-gpu==1.12
+    pip install --upgrade tensorflow-gpu==1.8.0
     ```
 * Verify if TF is using GPU with the command:
     ```
