@@ -131,14 +131,14 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
 
 ## Install Cuda-9.0 and Cuda-9.2 and related Nvidia drivers (setup decides the driver version automatically) 
 
-* Inspired from [here](https://docs.nvidia.com/cuda/archive/9.2/cuda-installation-guide-linux/index.html). Below is the set of actually needed commands:
+* Inspired from [here](https://docs.nvidia.com/cuda/archive/9.0/cuda-installation-guide-linux/index.html). Below is the set of actually needed commands:
     ```
     sudo apt-get install -y linux-headers-$(uname -r)
-    ** Download the Cuda toolkit (Base Installer) from [here](https://developer.nvidia.com/cuda-92-download-archive) **
+    ** Download the Cuda toolkit (Base Installer) from [here](https://developer.nvidia.com/cuda-90-download-archive) **
     sudo dpkg -i cuda-repo-<distro>_<version>_<architecture>.deb
     sudo apt-key add /var/cuda-repo-<version>/7fa2af80.pub
     sudo apt-get update
-    sudo apt-get install -y cuda-9-2
+    sudo apt-get install -y cuda-9-0
     reboot
     ```
 * It is highly likely that this will result in a **black screen on reboot**, since the cuda drivers downgade the NVidia driver version. To fix this, hard reboot the PC and boot in recovery mode. Then choose the `root` option and activate intel GPU instead of nvidia using the command `prime-select intel`, Finally reboot the PC and that should boot Kinuc properly. Next reinstall the nvidia-430 drivers as using 
@@ -148,12 +148,21 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     sudo apt install -y nvidia-430 nvidia-settings
     reboot
     ```
-* Repeat the previous two steps for Cuda-9.0
+* Repeat the previous two steps for Cuda-9.2
 * Add the below lines to bashrc:
     ```
-    export PATH=/usr/local/cuda-9.2/bin${PATH:+:${PATH}}
-    export LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+    export PATH=/usr/local/cuda/bin${PATH:+:${PATH}}
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/extras/CUPTI/lib64
+    ```
+* In a new terminal, verify that Cuda is installed and is being used properly
+    ```
+    cd /tmp/
+    cuda-install-samples-9.0.sh .
+    cd NVIDIA_CUDA-9.0_Samples/
+    make
+    cd bin/x86_64/linux/release/
+    ./deviceQuery
     ```
 * Install cuDNN for Cuda 9.0 using the Nvidia's [instructions manual](https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html)
 * The above step at the time of writing installed Driver Version: 430.64 with CUDA Version: 10.1. That is alright since it will use a runtime version of 9.2. This is the output of nvidia-smi command:
@@ -213,6 +222,75 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     deactivate
     ```
 
+## Install TensorFlow (Docker based)
+
+* To avoid the cumbersome and error prone method of installing the specific versions of CUDA toolkit and cuDNN, we use the Docker based TF containers.
+* Ensure that the Nvidia drivers are installed using the `nvidia-smi` command
+* Install the latest version of docker. Below instructions taken from [here](https://docs.docker.com/engine/install/ubuntu/)
+    ```
+    # Remove any old docker versions
+    sudo apt-get remove docker docker-engine docker.io containerd runc
+    # Set up the repository
+    sudo apt-get update
+    sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    # Install Docker
+    sudo apt-get update
+    sudo apt-get install docker-ce docker-ce-cli containerd.io
+    # Add current user to the docker group (required to avoid running docker using sudo)
+    sudo groupadd docker
+    sudo usermod -aG docker $USER
+    reboot
+    ```
+* Verify if docker is running properly
+    ```
+    docker run hello-world
+    ```
+* Install the Nvidia GPU support for docker. Taken from [here](https://github.com/NVIDIA/nvidia-docker)
+    ```
+    distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+    curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+    curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+    sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
+    sudo systemctl restart docker
+
+    # Test nvidia-smi with the latest official CUDA image
+    docker run --gpus all nvidia/cuda:10.0-base nvidia-smi
+    ```
+* Pull the desired TF image using `docker pull tensorflow/DESIRED_TAG`. The available tags can be found [here](https://hub.docker.com/r/tensorflow/tensorflow/tags/). For example:
+    ```
+    docker pull tensorflow/tensorflow:1.14.0-gpu-py3-jupyter
+    ```
+* Add any additional packages (such as pandas) that you desire to the pulled image.
+    * Create a new directory and inside it a Dockerfile
+        ```
+        mkdir -p /tmp/TF
+        cd /tmp/TF
+        gedit Dockerfile
+        ```
+    * Add the instructions to install additional packages to the Dockerfile as shown below and save the file.
+        ```
+        FROM tensorflow/tensorflow:1.14.0-gpu-py3-jupyter
+
+        WORKDIR /tf/mounted_dir
+        RUN pip install --upgrade pandas networkx
+        ```
+    * Build the customized docker image which is based on the pulled docker image using 
+        ```
+        docker build -t SOME_LOCAL_IMAGE_NAME .
+        ```
+    * Optionally you can also push the custom built docker image to the docker-hub using the below commands:
+        ```
+        docker login --username suvich15 # Enter password
+        docker tag SOME_LOCAL_IMAGE_NAME suvich15/SOME_REMOTE_IMAGE_NAME
+        docker push suvich15/SOME_REMOTE_IMAGE_NAME
+        ```
+* Launch the jupyter-notebook and start working:
+    ```
+    # docker run --rm -v ABS_DIR_PATH_ON_HOST_MACHINE:/tf/mounted_dir --gpus all -it -p 8888:8888 SOME_LOCAL_IMAGE_NAME
+    docker run --rm -v /home/suvich15/Desktop:/tf/mounted_dir --gpus all -it -p 8888:8888 my-customized-tensorflow
+    ```
 
 ## Install TensorFlow 1.8
 
