@@ -42,6 +42,7 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
 * Set the proper regional format from `System Settings -> Language Support -> Regional Format`. Choose the desired format and click on `Apply System-Wide`.
 * Set the Mouse scrolling to `Natural Scrolling` in `System Settings -> Mouse and Touchpad`
 * Set the desired power options in `System Settings -> Power`
+* Disable recent file and application history from `System Settings -> Security & Privacy -> Files & Applications`
 
 ## Install Terminator
 
