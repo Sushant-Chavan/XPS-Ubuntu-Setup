@@ -364,7 +364,8 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
 
 ## Install JabRef
 
-* Follow installation instructions from [here](https://docs.jabref.org/general/installation#installation-commands)
+* The stable version 5.0 does not support drag and drop of PDF files to import them in the bibliography. This feature is available in the `dev` version 5.1 which has been discussed on [GitHub](https://github.com/JabRef/jabref/issues/5017#issuecomment-531398988) and the latest `deb` installer can be downloaded from [here](https://builds.jabref.org/master/)
+* For stable version, follow installation instructions from [here](https://docs.jabref.org/general/installation#installation-commands)
 
 ## Install FoxitReader 
 
