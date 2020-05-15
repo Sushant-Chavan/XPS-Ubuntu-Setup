@@ -319,14 +319,14 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
 
     # Add PPA's
     sudo apt-add-repository ppa:kdenlive/kdenlive-stable
-    sudo add-apt-repository ppa:pinta-maintainers/pinta-stable
+    sudo add-apt-repository ppa:kritalime/ppa
     sudo apt-add-repository ppa:maarten-baert/simplescreenrecorder
 
     # Update apt cache
     sudo apt update
 
-    sudo apt install -y texlive-full texmaker git kdiff3 htop retext kdenlive pinta simplescreenrecorder
-    sudo snap install notepad-plus-plus vlc
+    sudo apt install -y texlive-full texmaker git kdiff3 htop retext kdenlive krita simplescreenrecorder
+    sudo snap install notepad-plus-plus vlc # This can take a lot of time as it downloads some things in the background
 
     sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
     sudo chmod a+rx /usr/local/bin/youtube-dl
@@ -367,7 +367,14 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
 
 ## Install FoxitReader 
 
-* Download the installer from [here](https://www.foxitsoftware.com/pdf-reader/) and complete the installation.
+* Download the installer from [here](https://www.foxitsoftware.com/pdf-reader/).
+* Extract the installer from the zip
+* Run the installer from the command line with sudo. For example:
+    ```
+    sudo ./FoxitReader.enu.setup.2.4.4.0911\(r057d814\).x64.run
+    ```
+* Then to install the software system wide, choose the install path in the dialog box as `/usr/local/foxitsoftware/foxitreader/`
+* Finish installation.
 
 
 
