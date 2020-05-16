@@ -326,7 +326,7 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     # Update apt cache
     sudo apt update
 
-    sudo apt install -y texlive-full texmaker git kdiff3 htop retext kdenlive krita simplescreenrecorder ranger
+    sudo apt install -y texlive-full texmaker git kdiff3 htop retext kdenlive krita simplescreenrecorder ranger vim
     sudo snap install notepad-plus-plus vlc # This can take a lot of time as it downloads some things in the background
 
     sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
