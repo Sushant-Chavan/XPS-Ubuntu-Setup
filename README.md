@@ -1,7 +1,32 @@
-# XPS-Ubuntu16-04-Setup
-This repository contains the instructions for installing Ubuntu-16.04 on a fresh XPS-15 (7590). It includes instructions to install several tools and packages that I require for my work with ROS-Kinetic, Tensorflow(&lt;=1.12) and PyTorch(1.15)
+Table of Contents
+=================
 
-# Finalized Setup Steps:
+   * [Ubuntu-16.04 installation:](#ubuntu-1604-installation)
+      * [Install the necessary Windows and Dell updates.](#install-the-necessary-windows-and-dell-updates)
+      * [Shrink Windows Partition](#shrink-windows-partition)
+      * [Switch from RAID to AHCI Mode](#switch-from-raid-to-ahci-mode)
+      * [Install Ubuntu](#install-ubuntu)
+      * [Some basic Ubuntu personalization settings](#some-basic-ubuntu-personalization-settings)
+      * [Install Terminator](#install-terminator)
+      * [Upgrade all packages](#upgrade-all-packages)
+      * [Setup Killer Wifi and Bluetooth Drivers:](#setup-killer-wifi-and-bluetooth-drivers)
+         * [Tested steps that work](#tested-steps-that-work)
+         * [Alternative methods if the previous did not work](#alternative-methods-if-the-previous-did-not-work)
+      * [Fix Suspend issue](#fix-suspend-issue)
+      * [Install Nvidia Drivers](#install-nvidia-drivers)
+      * [Python3 (and 3.6) setup](#python3-and-36-setup)
+      * [Create a Python 3.6 virtual environment (requires Python 3.6 to be installed beforehand as described previously)](#create-a-python-36-virtual-environment-requires-python-36-to-be-installed-beforehand-as-described-previously)
+      * [Install TensorFlow (Docker based)](#install-tensorflow-docker-based)
+      * [Install PyTorch version 1.5:](#install-pytorch-version-15)
+      * [Install ROS](#install-ros)
+      * [Install additional software](#install-additional-software)
+      * [Setup ThunderBird](#setup-thunderbird)
+      * [Install JabRef](#install-jabref)
+      * [Install FoxitReader](#install-foxitreader)
+   * [Setup Reference Guides](#setup-reference-guides)
+   
+# Ubuntu-16.04 installation:
+This repository contains the instructions for installing Ubuntu-16.04 on a fresh XPS-15 (7590). It includes instructions to install several tools and packages that I require for my work with ROS-Kinetic, Tensorflow and PyTorch.
 
 ## Install the necessary Windows and Dell updates.
 
