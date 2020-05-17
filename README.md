@@ -183,7 +183,7 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
 ## Install TensorFlow (Docker based)
 
 * To avoid the cumbersome and error prone method of installing the specific versions of CUDA toolkit and cuDNN, we use the Docker based TF containers.
-* Ensure that the Nvidia drivers are installed using the `nvidia-smi` command
+* Ensure that the Nvidia drivers are installed using the `nvidia-smi` command. Otherwise follow the steps described [here](#install-nvidia-drivers). 
 * Install the latest version of docker. Below instructions taken from [here](https://docs.docker.com/engine/install/ubuntu/)
     ```
     # Remove any old docker versions
