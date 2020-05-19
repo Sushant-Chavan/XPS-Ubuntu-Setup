@@ -167,7 +167,7 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     ```
     sudo add-apt-repository ppa:deadsnakes/ppa
     sudo apt update
-    sudo apt install -y python3.6
+    sudo apt install -y python3.6 python3.6-dev
     python3.6 --version
     # sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.5 1
     # sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 2
