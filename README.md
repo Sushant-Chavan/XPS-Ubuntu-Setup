@@ -23,6 +23,7 @@ Table of Contents
       * [Setup ThunderBird](#setup-thunderbird)
       * [Install JabRef](#install-jabref)
       * [Install FoxitReader](#install-foxitreader)
+      * [Setup Intel Realsense Camera](#setup-intel-realsense-camera)
    * [Setup Reference Guides](#setup-reference-guides)
    
 # Ubuntu-16.04 installation:
@@ -402,6 +403,22 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     ```
 * Then to install the software system wide, choose the install path in the dialog box as `/usr/local/foxitsoftware/foxitreader/`
 * Finish installation.
+
+## Setup Intel Realsense Camera
+
+* Install the latest Intel® RealSense™ SDK 2.0, using the instructions described [here](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md).
+* Verify that the SDK is instaled correctly by running the Realsense viewer
+    ```
+    realsense-viewer
+    ```
+* Install the ROS wrapper package. Instructions taken from [here](https://github.com/IntelRealSense/realsense-ros).
+    ```
+    sudo apt install -y ros-kinetic-realsense2-camera
+    ```
+* Verify that the ROS wrapper is installed correctly by using the below command and visualizing the RGB, DEPTH and INFRA images published by the ROS wrapper in RViz.
+    ```
+    roslaunch realsense2_camera rs_camera.launch
+    ```
 
 
 
