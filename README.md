@@ -428,3 +428,5 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     * [Installing Ubuntu 18.04 on the Dell XPS 15 7590](https://medium.com/@tylergwlum/my-journey-installing-ubuntu-18-04-on-the-dell-xps-15-7590-2019-756f738a6447)
     * [ItsFOSS - How To Install Ubuntu Alongside Windows 10](https://itsfoss.com/install-ubuntu-1404-dual-boot-mode-windows-8-81-uefi/)
     * [A GitHub Discussion regarding installation of Ubuntu](https://github.com/JackHack96/dell-xps-9570-ubuntu-respin/issues/108)
+2. Pytorch with ROS
+    * [ROS run python in virtual env](https://medium.com/codeda/ros-run-python-in-virtual-env-8c579304b9c9)
