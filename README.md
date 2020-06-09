@@ -324,6 +324,7 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     rosdep update
     sudo apt install -y python-rosinstall python-rosinstall-generator python-wstool build-essential python-catkin-tools python-pip
     sudo pip install catkin_pkg empy
+    sudo pip3 install rospkg catkin-pkg # required for using python3 scripts in ROS Kinetic
     sudo rm -rf /var/lib/apt/lists/*
     source /opt/ros/kinetic/setup.bash
     ```
