@@ -128,5 +128,8 @@ git config --global core.editor "vim"
 # disable ubuntu tracking "frequently used" applications
 gsettings set org.gnome.desktop.privacy remember-app-usage false
 
+# install Gnome tweaks tool to customise the desktop
+sudo apt install gnome-tweaks
+
 # reebot required to apply all changes for docker, nordvpn etc.
 sudo reboot
