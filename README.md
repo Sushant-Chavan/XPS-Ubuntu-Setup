@@ -421,6 +421,11 @@ This repository contains the instructions for installing Ubuntu-16.04 on a fresh
     roslaunch realsense2_camera rs_camera.launch
     ```
 
+## Fix screen tearing by enabling vsync
+
+* Synchronization is off by default as can be seen in the `X Server Display Config` tab of the `nvidia-settings` tool.
+* Synchronization must be enable via `prime` by setting the kernel parameter `nvidia-drm.modeset=1` as described [here](https://forums.developer.nvidia.com/t/prime-dislplays-cannot-be-controlled-by-nvidia-settings/120315/2).
+* This can be done via GRUB setting as described [here](https://forums.linuxmint.com/viewtopic.php?p=2039022&sid=e933d677f8a13822c7b3bc179462709f#p2039022).
 
 
 # Setup Reference Guides
